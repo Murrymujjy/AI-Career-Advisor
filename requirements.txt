@@ -1,6 +1,6 @@
 streamlit
 openai
 langchain==0.1.16
-langchain_community
+langchain-community==0.0.30
 python-dotenv
 pydantic==2.6.4
