@@ -1,16 +1,49 @@
-# 🤖 LangChain Loan Pre-Qualification Bot
+# 💼 AI Career Advisor Bot
 
-An AI chatbot built with Streamlit + LangChain that helps users determine if they're eligible for a microloan — based on age, sector, and community history.
+An intelligent, LangChain-powered chatbot that helps users explore suitable career paths based on their **background**, **skills**, and **interests** — no dataset required!
 
-## Features
-- Natural language chatbot
-- Custom logic tool for loan rules
-- LangChain memory for real conversations
-- Deployable on Streamlit Cloud
+![Streamlit App Screenshot](https://github.com/Murrymujjy/Loan-bot/blob/main/screenshot.png) <!-- Optional: Replace with your screenshot -->
 
-## Run Locally
+---
+
+## 🚀 Live Demo
+
+👉 [Launch the App](https://your-streamlit-link.streamlit.app)  
+*(Replace this with your actual deployed link once live)*
+
+---
+
+## 🧠 How It Works
+
+The bot uses **OpenAI's GPT model** to:
+- Analyze user input (e.g., education, interests, skills)
+- Suggest 3 relevant career paths
+- Recommend skills and tools to explore
+
+---
+
+## ✨ Example Input
+
+> I studied Physics and enjoy coding. I'm curious about healthcare and AI.
+
+### ✅ Example Output
+
+- **Suggested Careers**:  
+  - Medical Physicist  
+  - AI in Healthcare  
+  - Health Data Analyst  
+
+- **Recommended Skills**:  
+  Python, Machine Learning, Bioinformatics
+
+---
+
+## 📦 Project Structure
 
 ```bash
-pip install -r requirements.txt
-streamlit run app.py
-# Loan-bot
+career-advisor-bot/
+│
+├── app.py                # Streamlit app
+├── requirements.txt      # Project dependencies
+├── .env                  # OpenAI API Key (keep secret)
+└── README.md             # Project documentation
