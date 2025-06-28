@@ -1,7 +1,7 @@
 import streamlit as st
 from advisor_logic import generate_career_advice
 
-# Language selection
+# Streamlit page config
 st.set_page_config(page_title="AI Career Advisor", page_icon="🎯")
 
 st.title("🎯 AI Career Advisor Chatbot")
@@ -12,7 +12,7 @@ Welcome to the AI Career Advisor! Get professional guidance tailored to your bac
 🌐 You can choose your preferred language below.
 """)
 
-# Language dropdown
+# Language selection
 language_map = {
     "English (US)": "en",
     "English (UK)": "en",
@@ -32,7 +32,6 @@ with st.form("career_advice_form"):
 
     submitted = st.form_submit_button("✨ Get My Career Advice")
 
-# Call logic function on submit
 if submitted:
     if not all([name, background, interests, goals]):
         st.error("⚠️ Please complete all fields before submitting.")
