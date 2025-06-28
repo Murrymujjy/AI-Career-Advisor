@@ -1,61 +1,110 @@
-from googletrans import Translator
-from openai import OpenAI
-import os
+# mainapp.py
+import streamlit as st
+from advisor_logic import generate_career_advice, generate_cover_letter
+from utils import extract_text_from_pdf, extract_text_from_docx, generate_pdf_resume
 
-# Load your OpenAI API key
-openai_api_key = os.getenv("OPENAI_API_KEY")
+st.set_page_config(page_title="AI Career Advisor", page_icon="🎯")
+st.sidebar.title("📌 Navigation")
+page = st.sidebar.radio("Go to", ["Career Advice", "Resume Builder", "Cover Letter"])
 
-translator = Translator()
+language_map = {
+    "English (US)": "English",
+    "English (UK)": "English",
+    "Français": "French",
+    "Español": "Spanish",
+    "Yorùbá": "Yoruba",
+    "Hausa": "Hausa",
+    "Igbo": "Igbo"
+}
+selected_language = st.sidebar.selectbox("🌐 Choose your language", list(language_map.keys()))
+lang_code = language_map[selected_language]
 
-def translate_text(text, target_lang):
-    try:
-        translated = translator.translate(text, dest=target_lang)
-        return translated.text
-    except Exception:
-        return text
+if page == "Career Advice":
+    st.title("🎯 AI Career Advisor Chatbot")
 
-def generate_career_advice(name, background, interests, goals, lang_code):
-    prompt = f"""
-    You are an expert career advisor.
-    A user named {name} has the following profile:
-    - Background: {background}
-    - Interests: {interests}
-    - Career Goals: {goals}
+    with st.form("career_form"):
+        name = st.text_input("👤 Your Name")
+        background = st.text_area("🎓 Your Background")
+        interests = st.text_area("💡 Your Interests")
+        goals = st.text_area("🎯 Your Career Goals")
+        submit = st.form_submit_button("✨ Get Advice")
 
-    Provide a personalized career advice in simple language. Use bullet points and be concise.
-    """
-    
-    # Call OpenAI
-    client = OpenAI(api_key=openai_api_key)
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "You are an expert career advisor."},
-            {"role": "user", "content": prompt},
-        ],
-        temperature=0.7
-    )
-    result = response.choices[0].message.content.strip()
-    return translate_text(result, lang_code)
+    if submit:
+        if not all([name, background, interests, goals]):
+            st.error("⚠️ Please fill in all fields.")
+        else:
+            st.info("🧠 Generating personalized advice...")
+            response = generate_career_advice(name, background, interests, goals, lang_code)
+            st.markdown(response)
 
-def generate_cover_letter(name, email, role, company, job_description, tone, lang_code):
-    prompt = f"""
-    Write a {tone.lower()} cover letter for the job role of '{role}' at {company}.
-    The applicant's name is {name} and email is {email}.
-    The job description is:
-    {job_description}
+elif page == "Resume Builder":
+    st.title("📄 AI Resume Builder")
+    option = st.radio("Choose", ["Upload Resume", "Build Resume with AI"])
 
-    Keep it to 3–4 paragraphs. Highlight alignment with job description and express enthusiasm.
-    """
-    
-    client = OpenAI(api_key=openai_api_key)
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",
-        messages=[
-            {"role": "system", "content": "You are an expert cover letter writer."},
-            {"role": "user", "content": prompt},
-        ],
-        temperature=0.7
-    )
-    result = response.choices[0].message.content.strip()
-    return translate_text(result, lang_code)
+    if option == "Upload Resume":
+        file = st.file_uploader("Upload PDF or DOCX", type=["pdf", "docx"])
+        if file:
+            text = extract_text_from_pdf(file) if file.name.endswith(".pdf") else extract_text_from_docx(file)
+            st.text_area("📄 Extracted Text", value=text, height=300)
+
+    else:
+        name = st.text_input("👤 Full Name")
+        email = st.text_input("📧 Email")
+        phone = st.text_input("📱 Phone")
+        linkedin = st.text_input("🔗 LinkedIn")
+        summary = st.text_area("📝 Summary")
+        education = st.text_area("🎓 Education")
+        skills = st.text_area("💡 Skills (comma separated)")
+        experience = st.text_area("💼 Experience")
+
+        if st.button("🚀 Generate Resume"):
+            if not all([name, email, phone, summary, education, skills]):
+                st.warning("⚠️ Please complete all required fields.")
+            else:
+                resume = f"""
+{name}
+Email: {email} | Phone: {phone}
+{f'LinkedIn: {linkedin}' if linkedin else ''}
+
+Summary:
+{summary}
+
+Education:
+{education}
+
+Skills:
+{', '.join([s.strip() for s in skills.split(',')])}
+
+Experience:
+{experience or 'No experience listed.'}
+"""
+                st.text_area("📄 Resume Preview", value=resume, height=300)
+                pdf = generate_pdf_resume(resume)
+                with open(pdf, "rb") as f:
+                    st.download_button("📥 Download PDF", f, file_name="resume.pdf")
+
+elif page == "Cover Letter":
+    st.title("✉️ AI Cover Letter Generator")
+
+    with st.form("cover_form"):
+        name = st.text_input("👤 Your Name")
+        background = st.text_area("📚 Background")
+        job_title = st.text_input("💼 Job Title")
+        company = st.text_input("🏢 Company Name")
+        tone = st.selectbox("🗣️ Tone", ["Formal", "Casual"])
+        submit = st.form_submit_button("📨 Generate Cover Letter")
+
+    if submit:
+        if not all([name, background, job_title, company]):
+            st.warning("⚠️ All fields are required.")
+        else:
+            st.info("🧠 Creating your cover letter...")
+            letter = generate_cover_letter(name, background, job_title, company, tone.lower(), lang_code)
+            st.text_area("📄 Cover Letter Preview", value=letter, height=300)
+
+# Footer
+st.markdown("""
+---
+Made with ❤️ by RedCherry
+📬 [Feedback](mailto:murrymujjy@gmail.com)
+""")
