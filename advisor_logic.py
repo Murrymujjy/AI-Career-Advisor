@@ -1,61 +1,45 @@
-# advisor_logic.py
+from googletrans import Translator
 
-from deep_translator import GoogleTranslator
+def generate_career_advice(name, background, interests, goals, lang_code="en"):
+    if not all([name, background, interests, goals]):
+        return "Please fill in all fields to get personalized advice."
 
-def translate_text(text, target_lang):
-    try:
-        return GoogleTranslator(source='auto', target=target_lang).translate(text)
-    except Exception as e:
-        return f"❗ Translation error: {e}"
-
-    # English advice template
-    advice = f"""
+    base_response = f"""
 Hi {name}! 👋
 
-🎓 **Based on your Background**
-Your background in {background} gives you a strong foundation to explore different paths. Highlight your key experiences and transferable skills when applying for roles.
+🎓 **Your Background**
+Your background in {background} gives you a strong foundation. Be sure to highlight key skills and achievements.
 
 💡 **Your Interests**
-You're interested in {interests}, which are high-demand and future-forward areas. You can align your learning and job search around this.
+You're interested in {interests} — a fast-growing and exciting field! You can align your learning and job search with this.
 
 🎯 **Your Career Goals**
-Your goal of {goals} is inspiring! Let's break it down into achievable steps.
+Your goal of {goals} is inspiring. Let's break it into actionable steps:
 
 ---
 
-🛣️ **Career Paths to Explore**
+🛠️ **Recommended Paths**
 - Data Analyst
 - Product Manager
-- Technical Writer
 - UX Designer
+- AI Research Assistant
 
-🔧 **Recommended Skills to Learn**
-- Python, SQL, and Excel
-- Communication & problem-solving
-- Public speaking & storytelling
-
-📚 **Suggested Courses**
-- [Coursera Career Foundations](https://www.coursera.org)
+📘 **Courses to Explore**
 - [Google Career Certificates](https://grow.google/certificates/)
-- [Udemy Interview Skills](https://www.udemy.com)
-- [LinkedIn Learning Resume Help](https://www.linkedin.com/learning)
+- [Coursera AI Specializations](https://www.coursera.org)
+- [LinkedIn Learning](https://www.linkedin.com/learning/)
+
+📈 **Next Steps**
+- Polish your CV and LinkedIn profile
+- Build a small project portfolio
+- Practice interview questions
 
 ---
 
-📋 **Next Steps**
-- Tailor your resume to highlight relevant skills
-- Connect with professionals on LinkedIn
-- Prepare for behavioral & technical interviews
-
----
-
-🗣️ **We Value Your Feedback!**
-If you found this helpful or want to share how we can improve, feel free to email us.
-
-Best wishes on your career journey! 🚀
+We believe in your journey. 🚀 Best of luck!
 """
 
-    # Translate if needed
-    if language != "en":
-        return translate_text(advice, target_lang=language)
-    return advice
+    # Translate
+    translator = Translator()
+    translated = translator.translate(base_response, dest=lang_code).text
+    return translated
