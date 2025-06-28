@@ -1,4 +1,4 @@
-from googletrans import Translator
+from deep_translator import GoogleTranslator
 
 def generate_career_advice(name, background, interests, goals, lang_code="en"):
     if not all([name, background, interests, goals]):
@@ -39,7 +39,9 @@ Your goal of {goals} is inspiring. Let's break it into actionable steps:
 We believe in your journey. 🚀 Best of luck!
 """
 
-    # Translate
-    translator = Translator()
-    translated = translator.translate(base_response, dest=lang_code).text
-    return translated
+    # Auto-translate
+    if lang_code != "en":
+        translated = GoogleTranslator(source="auto", target=lang_code).translate(base_response)
+        return translated
+
+    return base_response
