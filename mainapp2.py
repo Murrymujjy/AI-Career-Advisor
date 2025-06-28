@@ -8,6 +8,16 @@ st.title("🎯 AI Career Advisor Chatbot")
 
 st.write("Fill in the details below to get personalized career advice:")
 
+language_map = {
+    "English (US)": "en",
+    "English (UK)": "en",  # Treated the same for simplicity
+    "Français": "fr"
+}
+
+language_choice = st.selectbox("🌐 Choose your language", list(language_map.keys()))
+selected_language = language_map[language_choice]
+
+
 name = st.text_input("Your Name")
 background = st.text_area("What's your academic or professional background?")
 interests = st.text_area("What are your career interests?")
