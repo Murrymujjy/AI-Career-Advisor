@@ -1,18 +1,12 @@
 # advisor_logic.py
 
-from googletrans import Translator
+from deep_translator import GoogleTranslator
 
 def translate_text(text, target_lang):
-    translator = Translator()
     try:
-        translated = translator.translate(text, dest=target_lang)
-        return translated.text
+        return GoogleTranslator(source='auto', target=target_lang).translate(text)
     except Exception as e:
         return f"❗ Translation error: {e}"
-
-def generate_career_advice(name, background, interests, goals, language="en"):
-    if not name or not background or not interests or not goals:
-        return "Please fill in all fields to get personalized advice."
 
     # English advice template
     advice = f"""
