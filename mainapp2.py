@@ -58,5 +58,5 @@ We value your feedback! If you have suggestions or comments about this tool, ple
 # Footer
 st.markdown("""
 ---
-Made with ❤️ using [Streamlit](https://streamlit.io/) and [OpenAI](https://openai.com/)
+Made with ❤️ by RedCherry
 """)
