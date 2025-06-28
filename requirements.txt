@@ -3,3 +3,6 @@ streamlit
 openai
 python-dotenv
 deep-translator
+python-docx
+PyMuPDF
+fpdf
