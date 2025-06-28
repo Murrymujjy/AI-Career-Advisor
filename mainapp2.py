@@ -1,40 +1,41 @@
 import streamlit as st
-from advisor_logic import generate_career_advice
+from advisor_logic import generate_career_advice, generate_cover_letter
 from utils import extract_text_from_pdf, extract_text_from_docx, generate_pdf_resume
 
 # Streamlit page config
 st.set_page_config(page_title="AI Career Advisor", page_icon="🎯")
 
-# Sidebar Navigation
-selected = st.sidebar.radio("Navigate", ["Career Advisor", "Resume Builder"])
+st.sidebar.title("🔍 Navigation")
+selected = st.sidebar.radio("Go to", ["Career Advice", "Resume Builder", "Cover Letter"])
 
-# ------------------ Career Advisor ------------------
-if selected == "Career Advisor":
-    st.title("🎯 AI Career Advisor Chatbot")
+# Language selection
+language_map = {
+    "English (US)": "en",
+    "English (UK)": "en-GB",
+    "Français": "fr",
+    "Yorùbá": "yo",
+    "Hausa": "ha",
+    "العربية (Arabic)": "ar",
+    "Español (Spanish)": "es"
+}
+language_choice = st.sidebar.selectbox("🌐 Language", list(language_map.keys()))
+selected_language = language_map[language_choice]
+
+st.markdown("---")
+
+# ========== PAGE 1: CAREER ADVICE ==========
+if selected == "Career Advice":
+    st.title("🎯 AI Career Advisor")
+
     st.markdown("""
-    Welcome to the AI Career Advisor! Get professional guidance tailored to your background, interests, and career goals.
-
-    🌐 You can choose your preferred language below.
+    Welcome to the AI Career Advisor! Get professional guidance tailored to your background, interests, and goals.
     """)
 
-    # Language selection
-    language_map = {
-        "English (US)": "en",
-        "English (UK)": "en",
-        "Français": "fr"
-    }
-    language_choice = st.selectbox("🌐 Choose your language", list(language_map.keys()))
-    selected_language = language_map[language_choice]
-
-    st.markdown("---")
-
-    # Input form
     with st.form("career_advice_form"):
         name = st.text_input("👤 Your Name")
         background = st.text_area("🎓 Your Background (education or experience)")
         interests = st.text_area("💡 Your Interests (e.g., AI, UX, Marketing)")
         goals = st.text_area("🎯 Your Career Goals")
-
         submitted = st.form_submit_button("✨ Get My Career Advice")
 
     if submitted:
@@ -51,7 +52,7 @@ if selected == "Career Advisor":
             )
             st.markdown(response, unsafe_allow_html=True)
 
-# ------------------ Resume Builder ------------------
+# ========== PAGE 2: RESUME BUILDER ==========
 elif selected == "Resume Builder":
     st.title("📄 AI Resume Builder")
     resume_option = st.radio("Choose an option:", ["Upload Resume", "Build Resume with AI"])
@@ -113,7 +114,36 @@ Experience:
                 with open(pdf_file, "rb") as f:
                     st.download_button("📥 Download Resume as PDF", f, file_name="resume.pdf", mime="application/pdf")
 
-# ------------------ Feedback Section ------------------
+# ========== PAGE 3: COVER LETTER ==========
+elif selected == "Cover Letter":
+    st.title("✉️ AI Cover Letter Generator")
+
+    with st.form("cover_letter_form"):
+        name = st.text_input("👤 Your Name")
+        email = st.text_input("📧 Your Email")
+        role = st.text_input("💼 Job Role")
+        company = st.text_input("🏢 Company Name")
+        job_description = st.text_area("📑 Paste Job Description")
+        tone = st.selectbox("🎙️ Tone", ["Formal", "Casual"])
+        submitted = st.form_submit_button("✍️ Generate Cover Letter")
+
+    if submitted:
+        if not all([name, email, role, company, job_description]):
+            st.error("⚠️ All fields must be completed.")
+        else:
+            st.info("🧠 Generating cover letter...")
+            cover_letter = generate_cover_letter(
+                name=name,
+                email=email,
+                role=role,
+                company=company,
+                job_description=job_description,
+                tone=tone,
+                lang_code=selected_language
+            )
+            st.text_area("📄 Cover Letter Preview", value=cover_letter, height=300)
+
+# ========== FOOTER ==========
 st.markdown("---")
 st.subheader("📬 Share Feedback")
 st.markdown("""
@@ -122,8 +152,5 @@ We value your feedback! If you have suggestions or comments about this tool, ple
 📧 [Send Feedback via Email](mailto:murrymujjy@gmail.com)
 """)
 
-# ------------------ Footer ------------------
-st.markdown("""
----
-Made with ❤️ by RedCherry
-""")
+st.markdown("---")
+st.markdown("Made with ❤️ by RedCherry — Powered by Streamlit & OpenAI")
