@@ -1,8 +1,13 @@
 # advisor_logic.py
 
+# from openai import OpenAI
+
+import os
 from openai import OpenAI
 
-client = OpenAI()
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+
+# client = OpenAI()
 
 # Language-specific prefixes to guide the model
 language_prefix = {
