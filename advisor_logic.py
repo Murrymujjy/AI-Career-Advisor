@@ -1,47 +1,61 @@
-from deep_translator import GoogleTranslator
+from googletrans import Translator
+from openai import OpenAI
+import os
 
-def generate_career_advice(name, background, interests, goals, lang_code="en"):
-    if not all([name, background, interests, goals]):
-        return "Please fill in all fields to get personalized advice."
+# Load your OpenAI API key
+openai_api_key = os.getenv("OPENAI_API_KEY")
 
-    base_response = f"""
-Hi {name}! 👋
+translator = Translator()
 
-🎓 **Your Background**
-Your background in {background} gives you a strong foundation. Be sure to highlight key skills and achievements.
+def translate_text(text, target_lang):
+    try:
+        translated = translator.translate(text, dest=target_lang)
+        return translated.text
+    except Exception:
+        return text
 
-💡 **Your Interests**
-You're interested in {interests} — a fast-growing and exciting field! You can align your learning and job search with this.
+def generate_career_advice(name, background, interests, goals, lang_code):
+    prompt = f"""
+    You are an expert career advisor.
+    A user named {name} has the following profile:
+    - Background: {background}
+    - Interests: {interests}
+    - Career Goals: {goals}
 
-🎯 **Your Career Goals**
-Your goal of {goals} is inspiring. Let's break it into actionable steps:
+    Provide a personalized career advice in simple language. Use bullet points and be concise.
+    """
+    
+    # Call OpenAI
+    client = OpenAI(api_key=openai_api_key)
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are an expert career advisor."},
+            {"role": "user", "content": prompt},
+        ],
+        temperature=0.7
+    )
+    result = response.choices[0].message.content.strip()
+    return translate_text(result, lang_code)
 
----
+def generate_cover_letter(name, email, role, company, job_description, tone, lang_code):
+    prompt = f"""
+    Write a {tone.lower()} cover letter for the job role of '{role}' at {company}.
+    The applicant's name is {name} and email is {email}.
+    The job description is:
+    {job_description}
 
-🛠️ **Recommended Paths**
-- Data Analyst
-- Product Manager
-- UX Designer
-- AI Research Assistant
-
-📘 **Courses to Explore**
-- [Google Career Certificates](https://grow.google/certificates/)
-- [Coursera AI Specializations](https://www.coursera.org)
-- [LinkedIn Learning](https://www.linkedin.com/learning/)
-
-📈 **Next Steps**
-- Polish your CV and LinkedIn profile
-- Build a small project portfolio
-- Practice interview questions
-
----
-
-We believe in your journey. 🚀 Best of luck!
-"""
-
-    # Auto-translate
-    if lang_code != "en":
-        translated = GoogleTranslator(source="auto", target=lang_code).translate(base_response)
-        return translated
-
-    return base_response
+    Keep it to 3–4 paragraphs. Highlight alignment with job description and express enthusiasm.
+    """
+    
+    client = OpenAI(api_key=openai_api_key)
+    response = client.chat.completions.create(
+        model="gpt-3.5-turbo",
+        messages=[
+            {"role": "system", "content": "You are an expert cover letter writer."},
+            {"role": "user", "content": prompt},
+        ],
+        temperature=0.7
+    )
+    result = response.choices[0].message.content.strip()
+    return translate_text(result, lang_code)
