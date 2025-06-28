@@ -1,18 +1,21 @@
+# advisor_logic.py
+
 from googletrans import Translator
 
-def translate_text(text, dest_language):
+def translate_text(text, target_lang):
+    translator = Translator()
     try:
-        translator = Translator()
-        translated = translator.translate(text, dest=dest_language)
+        translated = translator.translate(text, dest=target_lang)
         return translated.text
     except Exception as e:
-        return f"⚠️ Translation failed: {str(e)}"
+        return f"❗ Translation error: {e}"
 
-def generate_career_advice(name, background, interests, goals, language='en'):
+def generate_career_advice(name, background, interests, goals, language="en"):
     if not name or not background or not interests or not goals:
         return "Please fill in all fields to get personalized advice."
 
-    base_response = f"""
+    # English advice template
+    advice = f"""
 Hi {name}! 👋
 
 🎓 **Based on your Background**
@@ -38,26 +41,27 @@ Your goal of {goals} is inspiring! Let's break it down into achievable steps.
 - Public speaking & storytelling
 
 📚 **Suggested Courses**
-- [Coursera: Google Career Certificates](https://coursera.org)
-- [LinkedIn Learning: Resume & LinkedIn Mastery](https://linkedin.com/learning)
-- [Udemy: Interview Skills](https://udemy.com)
+- [Coursera Career Foundations](https://www.coursera.org)
+- [Google Career Certificates](https://grow.google/certificates/)
+- [Udemy Interview Skills](https://www.udemy.com)
+- [LinkedIn Learning Resume Help](https://www.linkedin.com/learning)
 
 ---
 
 📋 **Next Steps**
 - Tailor your resume to highlight relevant skills
-- Connect with professionals on [LinkedIn](https://linkedin.com)
+- Connect with professionals on LinkedIn
 - Prepare for behavioral & technical interviews
 
 ---
 
 🗣️ **We Value Your Feedback!**
-If you found this helpful or want to share how we can improve, feel free to reach out send us an email: [murrymujjy@gmail.com](mailto:murrymujjy@gmail.com)
-or leave your email!
+If you found this helpful or want to share how we can improve, feel free to email us.
 
-Good luck on your career journey! 🚀
+Best wishes on your career journey! 🚀
 """
 
-    if language != 'en':
-        return translate_text(base_response, dest_language=language)
-    return base_response
+    # Translate if needed
+    if language != "en":
+        return translate_text(advice, target_lang=language)
+    return advice
