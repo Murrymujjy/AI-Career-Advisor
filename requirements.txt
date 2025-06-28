@@ -1,4 +1,5 @@
-googletrans==4.0.0-rc1
+# googletrans==4.0.0-rc1
 streamlit
 openai
 python-dotenv
+deep-translator
