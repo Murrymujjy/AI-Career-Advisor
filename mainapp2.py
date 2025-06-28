@@ -1,6 +1,9 @@
 import streamlit as st
 from advisor_logic import generate_career_advice
 
+response = generate_career_advice(name, background, interests, goals, lang_code='fr')  # or 'en', 'en-GB'
+
+
 # Language selection
 st.set_page_config(page_title="AI Career Advisor", page_icon="🎯")
 
