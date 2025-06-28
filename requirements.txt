@@ -1,6 +1,7 @@
+--upgrade pip
 streamlit
 openai
 python-dotenv
-langchain==0.1.16
-langchain-community==0.0.30
+langchain==0.1.13
+langchain-community==0.0.24
 pydantic==1.10.13
