@@ -1,11 +1,13 @@
-# advisor_logic.py
-
 import os
-from openai import OpenAI
+import openai
 
-client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
+# Set OpenRouter key
+openai.api_key = os.getenv("OPENROUTER_API_KEY")  # Put this key in your .env or secrets
+openai.api_base = "https://openrouter.ai/api/v1"
 
-# Language-specific prefixes to guide the model
+# Model name (OpenRouter supports many)
+MODEL_NAME = "openai/gpt-3.5-turbo"  # You can also use mistralai/mistral-7b-instruct or others
+
 language_prefix = {
     "en": "",
     "en-GB": "Use British English.",
@@ -31,14 +33,15 @@ Goals: {goals}
 Give 2–3 career suggestions, required skills, and steps they can take. Keep it simple and motivating.
 """
     try:
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",  # ✅ changed from "gpt-4"
+        response = openai.ChatCompletion.create(
+            model=MODEL_NAME,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7
         )
         return response.choices[0].message.content.strip()
     except Exception as e:
         return f"❌ Error generating career advice: {e}"
+
 
 def generate_cover_letter(name, email, role, company, job_description, tone, lang_code):
     prefix = language_prefix.get(lang_code, "")
@@ -57,8 +60,8 @@ Write a {tone_text} cover letter for this job application:
 Structure: 3 paragraphs. Show enthusiasm, fit for the role, and a nice closing.
 """
     try:
-        response = client.chat.completions.create(
-            model="gpt-3.5-turbo",  # ✅ changed from "gpt-4"
+        response = openai.ChatCompletion.create(
+            model=MODEL_NAME,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7
         )
