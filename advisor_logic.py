@@ -1,10 +1,12 @@
 import os
 import openai
 
+# 🔑 Set the API key and base URL for OpenRouter
 openai.api_key = os.getenv("OPENROUTER_API_KEY")
 openai.base_url = "https://openrouter.ai/api/v1"
 
-MODEL_NAME = "openai/gpt-3.5-turbo"  # You can also try mistralai/mistral-7b-instruct
+# 🧠 Model to use (you can also try "mistralai/mistral-7b-instruct")
+MODEL = "openai/gpt-3.5-turbo"
 
 language_prefix = {
     "en": "",
@@ -33,7 +35,7 @@ Give 2–3 career suggestions, required skills, and steps they can take. Keep it
 """
     try:
         response = openai.chat.completions.create(
-            model=MODEL_NAME,
+            model=MODEL,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7
         )
@@ -60,7 +62,7 @@ Structure: 3 paragraphs. Show enthusiasm, fit for the role, and a nice closing.
 """
     try:
         response = openai.chat.completions.create(
-            model=MODEL_NAME,
+            model=MODEL,
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7
         )
