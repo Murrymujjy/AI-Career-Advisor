@@ -31,13 +31,18 @@ Give 2–3 career suggestions, required skills, and steps they can take. Keep it
 
     try:
         response = openai.chat.completions.create(
-            model="gpt-3.5-turbo",  # Use this if gpt-4 is unavailable
+            model="gpt-3.5-turbo",  # fallback if gpt-4 isn't available
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7
         )
+        # ✅ Debug logs
+        print("DEBUG TYPE:", type(response))
+        print("DEBUG RESPONSE:", response)
+
         return response.choices[0].message.content.strip()
     except Exception as e:
         return f"❌ Error generating career advice: {e}"
+
 
 
 def generate_cover_letter(name, email, role, company, job_description, tone, lang_code):
@@ -62,9 +67,10 @@ Structure: 3 paragraphs. Show enthusiasm, fit for the role, and a nice closing.
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7
         )
+        print("DEBUG TYPE:", type(response))  # Should be <class 'openai.types.chat.chat_completion.ChatCompletion'>
+        print("DEBUG RESPONSE:", response)
+        
         return response.choices[0].message.content.strip()
     except Exception as e:
         return f"❌ Error generating cover letter: {e}"
 
-print("DEBUG TYPE:", type(response))  # Should be <class 'openai.types.chat.chat_completion.ChatCompletion'>
-print("DEBUG RESPONSE:", response)
