@@ -12,7 +12,7 @@ client = OpenAI(
 
 def generate_career_advice(prompt: str) -> str:
     response = client.chat.completions.create(
-        model="openai/gpt-3.5-turbo",  # Or another OpenRouter-supported model
+        model="openrouter/openai/gpt-3.5-turbo",  # Or another OpenRouter-supported model
         messages=[
             {"role": "system", "content": "You are a professional career advisor."},
             {"role": "user", "content": prompt}
@@ -24,7 +24,7 @@ def generate_career_advice(prompt: str) -> str:
 
 def generate_cover_letter(prompt: str) -> str:
     response = client.chat.completions.create(
-        model="openai/gpt-3.5-turbo",
+        model="openrouter/openai/gpt-3.5-turbo",
         messages=[
             {"role": "system", "content": "You are a professional cover letter writer."},
             {"role": "user", "content": prompt}
