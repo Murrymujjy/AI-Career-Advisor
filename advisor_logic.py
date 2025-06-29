@@ -1,13 +1,9 @@
 # advisor_logic.py
 
-# from openai import OpenAI
-
 import os
 from openai import OpenAI
 
 client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
-
-# client = OpenAI()
 
 # Language-specific prefixes to guide the model
 language_prefix = {
@@ -20,7 +16,6 @@ language_prefix = {
     "es": "Responde en español.",
     "ar": "يرجى الرد باللغة العربية."
 }
-
 
 def generate_career_advice(name, background, interests, goals, lang_code):
     prefix = language_prefix.get(lang_code, "")
@@ -37,14 +32,13 @@ Give 2–3 career suggestions, required skills, and steps they can take. Keep it
 """
     try:
         response = client.chat.completions.create(
-            model="gpt-4",
+            model="gpt-3.5-turbo",  # ✅ changed from "gpt-4"
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7
         )
         return response.choices[0].message.content.strip()
     except Exception as e:
         return f"❌ Error generating career advice: {e}"
-
 
 def generate_cover_letter(name, email, role, company, job_description, tone, lang_code):
     prefix = language_prefix.get(lang_code, "")
@@ -64,7 +58,7 @@ Structure: 3 paragraphs. Show enthusiasm, fit for the role, and a nice closing.
 """
     try:
         response = client.chat.completions.create(
-            model="gpt-4",
+            model="gpt-3.5-turbo",  # ✅ changed from "gpt-4"
             messages=[{"role": "user", "content": prompt}],
             temperature=0.7
         )
