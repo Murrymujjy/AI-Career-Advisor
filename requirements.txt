@@ -1,8 +1,9 @@
 # googletrans==4.0.0-rc1
 streamlit
-openai
+# openai
 python-dotenv
 deep-translator
 python-docx
 PyMuPDF
 fpdf
+openai>=1.0.0
