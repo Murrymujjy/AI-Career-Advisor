@@ -65,3 +65,6 @@ Structure: 3 paragraphs. Show enthusiasm, fit for the role, and a nice closing.
         return response.choices[0].message.content.strip()
     except Exception as e:
         return f"❌ Error generating cover letter: {e}"
+
+print("DEBUG TYPE:", type(response))  # Should be <class 'openai.types.chat.chat_completion.ChatCompletion'>
+print("DEBUG RESPONSE:", response)
