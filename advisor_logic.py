@@ -1,76 +1,50 @@
-import os
 import openai
+import os
 
-# ✅ Correct setup for new openai>=1.0.0
-openai.api_key = os.getenv("OPENAI_API_KEY")
+# ✅ Set OpenRouter API base and key
+openai.api_base = "https://openrouter.ai/api/v1"
+openai.api_key = os.getenv("OPENROUTER_API_KEY")  # or paste key directly (not recommended for prod)
 
-language_prefix = {
-    "en": "",
-    "en-GB": "Use British English.",
-    "fr": "Répondez en français.",
-    "yo": "Jọwọ dahun ni ede Yorùbá.",
-    "ha": "Da amsa a cikin harshen Hausa.",
-    "ig": "Biko, zaa azịza ya na asụsụ Igbo.",
-    "es": "Responde en español.",
-    "ar": "يرجى الرد باللغة العربية."
-}
+# ✅ Supported models (pick one)
+DEFAULT_MODEL = "mistralai/mixtral-8x7b"  # good free one
+# "meta-llama/llama-3-70b-instruct" also works
 
-
-def generate_career_advice(name, background, interests, goals, lang_code):
-    prefix = language_prefix.get(lang_code, "")
-    prompt = f"""{prefix}
-You are an AI Career Advisor. Provide a personalized, encouraging career guidance for this user:
-
-Name: {name}
-Background: {background}
-Interests: {interests}
-Goals: {goals}
-
-Give 2–3 career suggestions, required skills, and steps they can take. Keep it simple and motivating.
-"""
-
+def generate_career_advice(prompt: str):
     try:
-        response = openai.chat.completions.create(
-            model="gpt-3.5-turbo",  # fallback if gpt-4 isn't available
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.7
+        response = openai.ChatCompletion.create(
+            model=DEFAULT_MODEL,
+            messages=[
+                {"role": "system", "content": "You are a professional career advisor. Provide detailed, helpful, and clear career guidance."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.7,
         )
-        # ✅ Debug logs
-        print("DEBUG TYPE:", type(response))
-        print("DEBUG RESPONSE:", response)
 
-        return response.choices[0].message.content.strip()
+        # ✅ Check structure
+        if hasattr(response, "choices"):
+            return response.choices[0].message.content.strip()
+        else:
+            return "❌ Invalid response: No choices field in response."
+
     except Exception as e:
         return f"❌ Error generating career advice: {e}"
 
 
-
-def generate_cover_letter(name, email, role, company, job_description, tone, lang_code):
-    prefix = language_prefix.get(lang_code, "")
-    tone_text = "professional and formal" if tone == "Formal" else "friendly and casual"
-
-    prompt = f"""{prefix}
-Write a {tone_text} cover letter for this job application:
-
-- Name: {name}
-- Email: {email}
-- Job Role: {role}
-- Company: {company}
-- Job Description: {job_description}
-
-Structure: 3 paragraphs. Show enthusiasm, fit for the role, and a nice closing.
-"""
-
+def generate_cover_letter(prompt: str):
     try:
-        response = openai.chat.completions.create(
-            model="gpt-3.5-turbo",  # safer than gpt-4
-            messages=[{"role": "user", "content": prompt}],
-            temperature=0.7
+        response = openai.ChatCompletion.create(
+            model=DEFAULT_MODEL,
+            messages=[
+                {"role": "system", "content": "You are a professional cover letter writer. Write in a clear, professional tone."},
+                {"role": "user", "content": prompt}
+            ],
+            temperature=0.6,
         )
-        print("DEBUG TYPE:", type(response))  # Should be <class 'openai.types.chat.chat_completion.ChatCompletion'>
-        print("DEBUG RESPONSE:", response)
-        
-        return response.choices[0].message.content.strip()
+
+        if hasattr(response, "choices"):
+            return response.choices[0].message.content.strip()
+        else:
+            return "❌ Invalid response: No choices field in response."
+
     except Exception as e:
         return f"❌ Error generating cover letter: {e}"
-
