@@ -1,3 +1,6 @@
+from dotenv import load_dotenv
+load_dotenv()  # to load .env variables
+
 import streamlit as st
 from advisor_logic import generate_career_advice, generate_cover_letter
 
