@@ -7,3 +7,5 @@ python-docx
 PyMuPDF
 fpdf
 openai>=1.0.0
+# streamlit
+requests
