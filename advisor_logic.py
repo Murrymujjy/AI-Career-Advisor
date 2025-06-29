@@ -1,23 +1,23 @@
-import os
-from openai import OpenAI
-from dotenv import load_dotenv
+import requests
 
-load_dotenv()
+def generate_career_advice(name, background, interests, language="English"):
+    prompt = f"""
+    You are a professional career advisor AI.
+    User Name: {name}
+    Background: {background}
+    Interests/Career Goals: {interests}
+    Preferred Language: {language}
 
-# Set up OpenRouter-compatible client
-client = OpenAI(
-    base_url="https://openrouter.ai/api/v1",
-    api_key=os.getenv("OPENROUTER_API_KEY")  # Ensure this is set in .env or environment
-)
-
-def generate_career_advice(prompt: str) -> str:
-    response = client.chat.completions.create(
-        model="gpt-3.5-turbo",  # ✅ Use plain name only
-        messages=[
-            {"role": "system", "content": "You are a supportive AI career coach. Respond with clear, practical advice."},
-            {"role": "user", "content": prompt}
-        ],
-        temperature=0.7,
-        max_tokens=600
+    Provide personalized, practical career advice in {language}.
+    """
+    response = requests.post(
+        "http://localhost:1234/v1/chat/completions",
+        headers={"Content-Type": "application/json"},
+        json={
+            "model": "local-model",  # Replace with your LM Studio model name
+            "messages": [{"role": "user", "content": prompt}],
+            "temperature": 0.7,
+            "max_tokens": 800,
+        },
     )
-    return response.choices[0].message.content.strip()
+    return response.json()["choices"][0]["message"]["content"]
