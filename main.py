@@ -3,7 +3,7 @@ import requests
 from utils import generate_pdf_resume
 from advisor_logic import generate_career_advice, generate_cover_letter
 
-# ---------- Helper Function ----------
+# ---------- Helper: Job Search ----------
 def search_jobs_remotive(query, location, remote):
     url = "https://remotive.io/api/remote-jobs"
     params = {"search": query}
