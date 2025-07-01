@@ -96,3 +96,14 @@ def search_jobs_remotive(query, location, remote):
     except Exception as e:
         st.error(f"API Error: {e}")
         return []
+
+from utils import generate_pdf_resume
+
+# Example: after generating resume content
+pdf_buffer = generate_pdf_resume(resume_content)
+st.download_button(
+    label="📄 Download Resume PDF",
+    data=pdf_buffer,
+    file_name="resume.pdf",
+    mime="application/pdf",
+)
