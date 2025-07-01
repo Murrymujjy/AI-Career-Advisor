@@ -6,34 +6,35 @@ from advisor_logic import generate_career_advice, generate_cover_letter
 # Page config
 st.set_page_config(page_title="AI Career Advisor", page_icon="💼")
 
-# Sidebar
+# Sidebar navigation
 st.sidebar.title("💼 AI Career Advisor")
 section = st.sidebar.radio(
     "Navigate", 
     ["Career Advice", "Resume Builder", "Cover Letter Generator", "Job Finder & Auto Apply"]
 )
 
-# Header
-st.title("💼 AI Career Advisor")
-st.markdown("Get personalized career support powered by your local AI model (via LM Studio).")
-
-# Common Inputs
-name = st.text_input("Your Name", placeholder="e.g. Mujeebat")
-email = st.text_input("Your Email", placeholder="e.g. murrymujjy@gmail.com")
-background = st.text_area("Brief Background", placeholder="e.g. Nuclear Physics")
-interests = st.text_area("Your Interests or Career Goals", placeholder="e.g. Machine Learning, Data Science")
-language = st.selectbox("Preferred Language", ["English", "French", "Spanish", "Yoruba", "Hausa", "Igbo"])
+# Language mapping
 lang_code_map = {
     "English": "en", "French": "fr", "Spanish": "es", 
     "Yoruba": "yo", "Hausa": "ha", "Igbo": "ig"
 }
-lang_code = lang_code_map.get(language, "en")
 
+# -------------------------------
 # Section 1: Career Advice
+# -------------------------------
 if section == "Career Advice":
-    if st.button("🧠 Generate Career Advice"):
+    st.title("🧠 Career Advice")
+    st.markdown("Get personalized career advice from your AI assistant.")
+
+    name = st.text_input("Your Name", key="ca_name")
+    background = st.text_area("Your Background", key="ca_bg")
+    interests = st.text_area("Your Interests or Career Goals", key="ca_interests")
+    language = st.selectbox("Preferred Language", list(lang_code_map.keys()), key="ca_lang")
+    lang_code = lang_code_map[language]
+
+    if st.button("Generate Advice"):
         if not name or not background or not interests:
-            st.warning("⚠️ Please complete all fields.")
+            st.warning("Please complete all fields.")
         else:
             with st.spinner("Generating advice..."):
                 try:
@@ -43,19 +44,23 @@ if section == "Career Advice":
                 except Exception as e:
                     st.error(f"❌ Error: {e}")
 
+# -------------------------------
 # Section 2: Resume Builder
+# -------------------------------
 elif section == "Resume Builder":
-    st.subheader("📄 Resume Builder")
+    st.title("📄 Resume Builder")
+    st.markdown("Generate a professional resume in PDF format.")
 
-    summary = st.text_area("Professional Summary", placeholder="e.g. Passionate Machine Learning engineer...")
-    skills = st.text_area("Skills (comma-separated)", placeholder="e.g. Python, SQL, TensorFlow")
-    education = st.text_area("Education", placeholder="e.g. BSc in Engineering Physics...")
-    experience = st.text_area("Work Experience", placeholder="e.g. Interned at XYZ Ltd...")
-    achievements = st.text_area("Achievements", placeholder="e.g. 1st prize in Zindi Hackathon...")
+    name = st.text_input("Your Name", key="rb_name")
+    summary = st.text_area("Professional Summary", key="rb_summary")
+    skills = st.text_area("Skills (comma-separated)", key="rb_skills")
+    education = st.text_area("Education", key="rb_education")
+    experience = st.text_area("Work Experience", key="rb_experience")
+    achievements = st.text_area("Achievements", key="rb_achievements")
 
-    if st.button("📄 Generate Resume"):
+    if st.button("Generate Resume"):
         if not name or not summary:
-            st.warning("Please fill in your name and professional summary.")
+            st.warning("Please provide your name and summary.")
         else:
             resume_text = f"""Resume - {name}\n\nProfessional Summary:\n{summary}\n\nSkills:\n{skills}\n\nEducation:\n{education}\n\nExperience:\n{experience}\n\nAchievements:\n{achievements}"""
             pdf_path = generate_pdf_resume(resume_text, filename="resume.pdf")
@@ -63,14 +68,23 @@ elif section == "Resume Builder":
             with open(pdf_path, "rb") as f:
                 st.download_button("📥 Download Resume", f, file_name="resume.pdf")
 
+# -------------------------------
 # Section 3: Cover Letter Generator
+# -------------------------------
 elif section == "Cover Letter Generator":
-    role = st.text_input("Target Job Role", placeholder="e.g. Data Scientist")
-    company = st.text_input("Company Name", placeholder="e.g. Google")
-    job_desc = st.text_area("Job Description", placeholder="Paste the job description here.")
-    tone = st.selectbox("Tone of Letter", ["Professional", "Friendly", "Passionate"])
+    st.title("✍️ Cover Letter Generator")
+    st.markdown("Create a personalized cover letter for a specific job.")
 
-    if st.button("✍️ Generate Cover Letter"):
+    name = st.text_input("Your Name", key="cl_name")
+    email = st.text_input("Your Email", key="cl_email")
+    role = st.text_input("Target Job Role", key="cl_role")
+    company = st.text_input("Company Name", key="cl_company")
+    job_desc = st.text_area("Job Description", key="cl_description")
+    tone = st.selectbox("Tone", ["Professional", "Friendly", "Passionate"], key="cl_tone")
+    language = st.selectbox("Preferred Language", list(lang_code_map.keys()), key="cl_lang")
+    lang_code = lang_code_map[language]
+
+    if st.button("Generate Cover Letter"):
         if not all([name, email, role, company, job_desc]):
             st.warning("⚠️ Please fill in all fields.")
         else:
@@ -81,17 +95,23 @@ elif section == "Cover Letter Generator":
                 except Exception as e:
                     st.error(f"❌ Error: {e}")
 
+# -------------------------------
 # Section 4: Job Finder & Auto Apply
+# -------------------------------
 elif section == "Job Finder & Auto Apply":
-    st.subheader("🔍 Job Finder & Auto Apply")
-    st.write("Search for jobs online and generate personalized cover letters.")
+    st.title("🔍 Job Finder & Auto Apply")
+    st.markdown("Search for remote jobs and generate custom cover letters.")
 
-    query = st.text_input("Job Title or Keywords", placeholder="e.g. Data Analyst")
-    location = st.text_input("Location (optional)", placeholder="e.g. Remote or Lagos")
-    remote = st.selectbox("Remote Only?", ["Yes", "No", "Any"], index=0)
+    name = st.text_input("Your Name", key="job_name")
+    email = st.text_input("Your Email", key="job_email")
+    query = st.text_input("Job Title or Keywords", key="job_query")
+    location = st.text_input("Preferred Location (optional)", key="job_location")
+    remote = st.selectbox("Remote Only?", ["Yes", "No", "Any"], index=0, key="job_remote")
+    language = st.selectbox("Preferred Language", list(lang_code_map.keys()), key="job_lang")
+    lang_code = lang_code_map[language]
 
     if st.button("Search Jobs"):
-        with st.spinner("Searching..."):
+        with st.spinner("Searching for jobs..."):
             jobs = search_jobs_remotive(query, location, remote)
 
         if not jobs:
@@ -102,7 +122,7 @@ elif section == "Job Finder & Auto Apply":
                     st.markdown(f"**Location:** {job['candidate_required_location']}")
                     st.markdown(f"**Category:** {job['category']}")
                     st.markdown(f"[Apply Link]({job['url']})")
-                    if st.button(f"✍️ Generate Cover Letter for Job {i+1}"):
+                    if st.button(f"✍️ Generate Cover Letter for Job {i+1}", key=f"job_button_{i}"):
                         with st.spinner("Generating tailored cover letter..."):
                             try:
                                 job_title = job['title']
@@ -113,7 +133,9 @@ elif section == "Job Finder & Auto Apply":
                             except Exception as e:
                                 st.error(f"Error: {e}")
 
-# Helper: Remotive job API
+# -------------------------------
+# Helper: Remotive API Function
+# -------------------------------
 def search_jobs_remotive(query, location, remote):
     url = "https://remotive.io/api/remote-jobs"
     params = {"search": query}
@@ -121,7 +143,6 @@ def search_jobs_remotive(query, location, remote):
         res = requests.get(url, params=params)
         data = res.json()
         jobs = data.get("jobs", [])
-
         if remote == "Yes":
             jobs = [job for job in jobs if "Remote" in job.get("job_type", "")]
         elif remote == "No":
@@ -131,7 +152,9 @@ def search_jobs_remotive(query, location, remote):
         st.error(f"API Error: {e}")
         return []
 
+# -------------------------------
 # Footer
+# -------------------------------
 st.markdown(
     """
     <hr style="margin-top: 2em;"/>
