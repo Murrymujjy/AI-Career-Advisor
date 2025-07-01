@@ -37,7 +37,7 @@ if section == "Career Advice":
         else:
             with st.spinner("Generating advice..."):
                 try:
-                    advice = generate_career_advice(name, background, interests, interests, lang_code)
+                    advice = generate_career_advice(name, background, interests, language)
                     st.success("✅ Career advice generated!")
                     st.text_area("📋 Career Advice", value=advice, height=400)
                 except Exception as e:
