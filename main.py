@@ -126,9 +126,12 @@ def search_jobs_remotive(query, location, remote):
             jobs = [job for job in jobs if "Remote" in job.get("job_type", "")]
         elif remote == "No":
             jobs = [job for job in jobs if "Remote" not in job.get("job_type", "")]
+        return jobs[:5]
+    except Exception as e:
+        st.error(f"API Error: {e}")
+        return []
 
-
-        # Footer
+# Footer
 st.markdown(
     """
     <hr style="margin-top: 2em;"/>
@@ -138,9 +141,3 @@ st.markdown(
     """,
     unsafe_allow_html=True
 )
-
-
-        return jobs[:5]
-    except Exception as e:
-        st.error(f"API Error: {e}")
-        return []
