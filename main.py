@@ -3,28 +3,7 @@ import requests
 from utils import generate_pdf_resume
 from advisor_logic import generate_career_advice, generate_cover_letter
 
-from dotenv import load_dotenv
-load_dotenv()
-
-# ✅ Helper function moved to top
-def search_jobs_remotive(query, location, remote):
-    url = "https://remotive.io/api/remote-jobs"
-    params = {"search": query}
-    try:
-        res = requests.get(url, params=params)
-        data = res.json()
-        jobs = data.get("jobs", [])
-
-        if remote == "Yes":
-            jobs = [job for job in jobs if "Remote" in job.get("job_type", "")]
-        elif remote == "No":
-            jobs = [job for job in jobs if "Remote" not in job.get("job_type", "")]
-        return jobs[:5]
-    except Exception as e:
-        st.error(f"API Error: {e}")
-        return []
-
-# Streamlit config
+# Page config
 st.set_page_config(page_title="AI Career Advisor", page_icon="💼")
 
 # Sidebar
@@ -36,7 +15,7 @@ section = st.sidebar.radio(
 
 # Header
 st.title("💼 AI Career Advisor")
-st.markdown("Get personalized career support powered by your local AI model (via LM Studio).")
+st.markdown("Get personalized career support powered by AI via Hugging Face.")
 
 # Common Inputs
 name = st.text_input("Your Name", placeholder="e.g. Mujeebat")
@@ -97,7 +76,7 @@ elif section == "Cover Letter Generator":
         else:
             with st.spinner("Generating..."):
                 try:
-                    letter = generate_cover_letter(name, email, role, company, job_desc, tone, lang_code)
+                    letter = generate_cover_letter(name, email, role, company, job_desc, tone, language)
                     st.text_area("📄 Cover Letter", letter, height=400)
                 except Exception as e:
                     st.error(f"❌ Error: {e}")
@@ -129,10 +108,28 @@ elif section == "Job Finder & Auto Apply":
                                 job_title = job['title']
                                 company = job['company_name']
                                 job_desc = job.get("description", "")
-                                cover_letter = generate_cover_letter(name, email, job_title, company, job_desc, "Professional", lang_code)
+                                cover_letter = generate_cover_letter(name, email, job_title, company, job_desc, "Professional", language)
                                 st.text_area("📄 Your Cover Letter", cover_letter, height=300)
                             except Exception as e:
                                 st.error(f"Error: {e}")
+
+# Helper: Remotive API job search
+def search_jobs_remotive(query, location, remote):
+    url = "https://remotive.io/api/remote-jobs"
+    params = {"search": query}
+    try:
+        res = requests.get(url, params=params)
+        data = res.json()
+        jobs = data.get("jobs", [])
+
+        if remote == "Yes":
+            jobs = [job for job in jobs if "Remote" in job.get("job_type", "")]
+        elif remote == "No":
+            jobs = [job for job in jobs if "Remote" not in job.get("job_type", "")]
+        return jobs[:5]
+    except Exception as e:
+        st.error(f"API Error: {e}")
+        return []
 
 # Footer
 st.markdown(
