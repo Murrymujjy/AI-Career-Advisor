@@ -1,70 +1,40 @@
 # advisor_logic.py
 
-import requests
+import os
+from huggingface_hub import InferenceClient
 
-LLM_URL = "http://localhost:1234/v1/chat/completions"
-MODEL_NAME = "local-model"  # Replace with the model you're running in LM Studio, e.g., "llama3"
+# Setup Hugging Face Inference Client (replace "novita" if needed)
+client = InferenceClient(
+    provider="novita",
+    api_key=os.environ.get("HF_TOKEN")
+)
 
 def generate_career_advice(name, background, interests, language="English"):
     prompt = f"""
-    You are an AI career advisor.
-
-    Candidate Name: {name}
+    You are an AI Career Advisor. Help {name} with career advice.
     Background: {background}
     Interests: {interests}
-    Preferred Language: {language}
-
-    Give concise, personalized career advice in bullet points. Be supportive, insightful, and clear.
+    Respond in {language}.
     """
 
-    response = requests.post(
-        LLM_URL,
-        headers={"Content-Type": "application/json"},
-        json={
-            "model": MODEL_NAME,
-            "messages": [
-                {"role": "system", "content": "You are a helpful career advisor."},
-                {"role": "user", "content": prompt}
-            ],
-            "temperature": 0.7,
-            "max_tokens": 700
-        }
+    response = client.chat.completions.create(
+        model="deepseek-ai/DeepSeek-R1-0528",
+        messages=[{"role": "user", "content": prompt}]
     )
 
-    if response.status_code == 200:
-        return response.json()["choices"][0]["message"]["content"]
-    else:
-        return "❌ Failed to generate career advice."
+    return response.choices[0].message.content
 
 
-def generate_cover_letter(name, background, job_title, company_name, language="English"):
+def generate_cover_letter(name, email, role, company, job_desc, tone="Professional", language="English"):
     prompt = f"""
-    You are an AI assistant helping write a personalized cover letter.
-
-    Candidate Name: {name}
-    Background: {background}
-    Job Title: {job_title}
-    Company: {company_name}
-    Language: {language}
-
-    Write a professional cover letter tailored to this job. The tone should be confident and polite.
+    Generate a {tone.lower()} cover letter for {name} ({email}) applying for the role of {role} at {company}.
+    Job Description: {job_desc}
+    Respond in {language}.
     """
 
-    response = requests.post(
-        LLM_URL,
-        headers={"Content-Type": "application/json"},
-        json={
-            "model": MODEL_NAME,
-            "messages": [
-                {"role": "system", "content": "You are a helpful AI career assistant."},
-                {"role": "user", "content": prompt}
-            ],
-            "temperature": 0.7,
-            "max_tokens": 700
-        }
+    response = client.chat.completions.create(
+        model="deepseek-ai/DeepSeek-R1-0528",
+        messages=[{"role": "user", "content": prompt}]
     )
 
-    if response.status_code == 200:
-        return response.json()['choices'][0]['message']['content']
-    else:
-        return "❌ Failed to generate cover letter."
+    return response.choices[0].message.content
