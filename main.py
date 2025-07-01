@@ -3,6 +3,9 @@ import requests
 from utils import generate_pdf_resume
 from advisor_logic import generate_career_advice, generate_cover_letter
 
+from dotenv import load_dotenv
+load_dotenv()
+
 # ✅ Helper function moved to top
 def search_jobs_remotive(query, location, remote):
     url = "https://remotive.io/api/remote-jobs"
