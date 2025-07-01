@@ -48,7 +48,3 @@ if st.button("🔎 Search Jobs"):
                                 )
                                 st.markdown("#### 📄 AI-Generated Cover Letter:")
                                 st.code(cover_letter, language="markdown")
-            else:
-                st.warning("No jobs found.")
-        else:
-            st.error("❌ Failed to retrieve job data.")
