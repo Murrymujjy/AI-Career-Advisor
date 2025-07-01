@@ -2,49 +2,55 @@
 
 import streamlit as st
 import requests
-import json
-from advisor_logic import generate_cover_letter
+from advisor_logic import generate_cover_letter  # Reuse your AI logic
 
-st.title("🌍 Job Finder & Auto Apply")
+def job_finder_page():
+    st.title("🔍 Job Finder & Auto Apply")
+    st.write("Search for jobs and generate tailored cover letters!")
 
-st.markdown("Search for remote jobs online, and generate a custom cover letter using AI.")
+    query = st.text_input("Enter job title or keyword")
+    location = st.text_input("Enter preferred location (optional)")
+    remote = st.selectbox("Remote jobs?", ["Yes", "No", "Any"], index=0)
 
-# Input fields
-job_keyword = st.text_input("🔍 Enter a Job Keyword", value="Machine Learning")
-job_category = st.selectbox("📁 Choose a Category", [
-    "Software Development", "Customer Service", "Design", "Marketing", "Sales", "Product", "Other"
-])
+    if st.button("Search Jobs"):
+        with st.spinner("Searching for jobs..."):
+            jobs = search_jobs_remotive(query, location, remote)
+        if not jobs:
+            st.error("No jobs found.")
+            return
 
-# User profile for personalization
-with st.expander("✍️ Your Profile (for Cover Letter)"):
-    user_name = st.text_input("Your Name", value="Mujeebat")
-    background = st.text_area("Brief Background", value="Background in Nuclear Physics, interested in AI/ML.")
-    language = st.selectbox("Preferred Language", ["English (US)", "French", "Spanish", "Yoruba", "Hausa", "Igbo"])
+        for i, job in enumerate(jobs):
+            with st.expander(f"📌 {job['title']} at {job['company_name']}"):
+                st.markdown(f"**Location:** {job['candidate_required_location']}")
+                st.markdown(f"**Category:** {job['category']}")
+                st.markdown(f"[Apply Here]({job['url']})")
 
-# Button to trigger job search
-if st.button("🔎 Search Jobs"):
-    with st.spinner("Fetching remote jobs..."):
-        api_url = f"https://remotive.io/api/remote-jobs?search={job_keyword}&category={job_category.replace(' ', '%20')}"
-        response = requests.get(api_url)
-        if response.status_code == 200:
-            jobs = response.json().get("jobs", [])
-            if jobs:
-                st.success(f"Found {len(jobs)} jobs! Showing top 5.")
-                for job in jobs[:5]:
-                    with st.container():
-                        st.markdown(f"### 🏢 {job['title']}")
-                        st.markdown(f"- Company: {job['company_name']}")
-                        st.markdown(f"- Location: {job['candidate_required_location']}")
-                        st.markdown(f"- [🔗 Job Link]({job['url']})")
+                if st.button(f"✍️ Generate Cover Letter for Job {i+1}"):
+                    with st.spinner("Generating cover letter..."):
+                        cover_letter = generate_cover_letter(
+                            job_title=job["title"],
+                            company_name=job["company_name"],
+                            description=job["description"]
+                        )
+                        st.text_area("📄 Cover Letter", cover_letter, height=300)
 
-                        if st.button(f"✉️ Generate Cover Letter for {job['title']}", key=job['id']):
-                            with st.spinner("Writing cover letter..."):
-                                cover_letter = generate_cover_letter(
-                                    name=user_name,
-                                    background=background,
-                                    job_title=job['title'],
-                                    company_name=job['company_name'],
-                                    language=language
-                                )
-                                st.markdown("#### 📄 AI-Generated Cover Letter:")
-                                st.code(cover_letter, language="markdown")
+# Helper function to call Remotive API
+def search_jobs_remotive(query, location, remote):
+    url = "https://remotive.io/api/remote-jobs"
+    params = {"search": query}
+    if location:
+        params["location"] = location
+    try:
+        res = requests.get(url, params=params)
+        jobs = res.json().get("jobs", [])
+
+        # Filter remote if needed
+        if remote == "Yes":
+            jobs = [job for job in jobs if "Remote" in job.get("job_type", "")]
+        elif remote == "No":
+            jobs = [job for job in jobs if "Remote" not in job.get("job_type", "")]
+
+        return jobs[:5]  # limit results
+    except Exception as e:
+        st.error(f"API Error: {e}")
+        return []
