@@ -1,29 +1,7 @@
-# googletrans==4.0.0-rc1
-streamlit
-# openai
-python-dotenv
-deep-translator
-python-docx
-PyMuPDF
-fpdf
-openai>=1.0.0
-# streamlit
-requests
-# Core
 streamlit>=1.32.0
 requests>=2.31.0
-
-# Hugging Face Inference Client
 huggingface_hub>=0.22.2
-
-# PDF generation
 reportlab>=3.6.12
-
-# Optional: for translation/localization if used
 googletrans==4.0.0-rc1
-
-# Optional: if you use Langchain features
 langchain>=0.1.16
-
-# For managing secrets securely
 python-dotenv>=1.0.0
