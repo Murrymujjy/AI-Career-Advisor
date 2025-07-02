@@ -4,7 +4,7 @@ from streamlit_option_menu import option_menu
 # Modular imports
 from career_advice import show as show_career_advice
 from resume_builder import show as show_resume_builder
-from cover_letter import show as show_cover_letter
+from cover_letter_page import show as show_cover_letter
 from job_finder import show as show_job_finder
 
 # Page config
