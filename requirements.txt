@@ -8,3 +8,4 @@ PyMuPDF
 python-docx
 fpdf
 huggingface_hub
+streamlit-option-menu
