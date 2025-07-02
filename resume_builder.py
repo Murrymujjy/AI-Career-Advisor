@@ -1,4 +1,4 @@
-from huggingface_hub import InferenceClient
+from huggingface_hub import InferenceClient 
 import streamlit as st
 
 # Load Hugging Face token securely from Streamlit secrets
@@ -36,3 +36,24 @@ def generate_resume(name, background, interests):
     )
 
     return response.choices[0].message.content.strip()
+
+
+# UI section wrapped in show()
+def show():
+    st.subheader("📄 AI Resume Builder")
+
+    name = st.text_input("Your Full Name", placeholder="e.g. Mujeebat Muritala")
+    background = st.text_area("Your Academic/Professional Background", placeholder="e.g. BSc in Engineering Physics, Machine Learning enthusiast...")
+    interests = st.text_area("Career Interests / Goals", placeholder="e.g. Data Science, AI in healthcare, Nuclear engineering...")
+
+    if st.button("✨ Generate Resume"):
+        if not name or not background or not interests:
+            st.warning("Please fill in all fields before generating your resume.")
+        else:
+            with st.spinner("Generating your resume..."):
+                try:
+                    resume = generate_resume(name, background, interests)
+                    st.success("✅ Resume generated!")
+                    st.text_area("📄 Generated Resume", resume, height=500)
+                except Exception as e:
+                    st.error(f"❌ Error: {e}")
