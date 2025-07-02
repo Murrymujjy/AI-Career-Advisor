@@ -1,5 +1,7 @@
 # cover_letter.py
 
+print("✅ cover_letter.py loaded")
+
 from huggingface_hub import InferenceClient
 import streamlit as st
 
