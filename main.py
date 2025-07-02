@@ -1,4 +1,5 @@
 import streamlit as st
+from streamlit_option_menu import option_menu
 import requests
 from utils import generate_pdf_resume
 from advisor_logic import generate_career_advice, generate_cover_letter
