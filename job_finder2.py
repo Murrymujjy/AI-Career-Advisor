@@ -1,3 +1,5 @@
+# job_finder.py
+
 import streamlit as st
 import requests
 from advisor_logic import generate_cover_letter
@@ -35,19 +37,32 @@ def show():
                         # Cover letter generation form inside each job
                         with st.form(f"cover_letter_form_{job['id']}"):
                             user_name = st.text_input("Your Name", key=f"name_{job['id']}")
+                            user_email = st.text_input("Your Email", key=f"email_{job['id']}")
                             user_background = st.text_area("Your Background", key=f"background_{job['id']}")
                             user_skills = st.text_area("Relevant Skills or Experience", key=f"skills_{job['id']}")
                             submit_cover = st.form_submit_button("Generate Cover Letter")
 
                         if submit_cover:
                             with st.spinner("Generating tailored cover letter..."):
-                                prompt = f"Write a professional cover letter for the role '{job['title']}' at {job['company_name']}. Candidate name is {user_name}. Background: {user_background}. Relevant experience: {user_skills}."
-                                cover_letter = generate_cover_letter(prompt)
-                                st.success("Cover letter generated!")
-                                st.code(cover_letter, language="markdown")
+                                try:
+                                    job_desc = job['description']
+                                    cover_letter = generate_cover_letter(
+                                        name=user_name,
+                                        email=user_email,
+                                        role=job['title'],
+                                        company=job['company_name'],
+                                        job_desc=job_desc,
+                                        tone="Professional",
+                                        language="English"
+                                    )
+                                    st.success("Cover letter generated!")
+                                    st.code(cover_letter, language="markdown")
 
-                            if apply_url:
-                                st.markdown(f"[Go to Job Page and Apply]({apply_url})", unsafe_allow_html=True)
+                                    if apply_url:
+                                        st.markdown(f"[Go to Job Page and Apply]({apply_url})", unsafe_allow_html=True)
+
+                                except Exception as e:
+                                    st.error(f"❌ Error generating cover letter: {e}")
 
             else:
                 st.warning("No jobs found for the specified title.")
