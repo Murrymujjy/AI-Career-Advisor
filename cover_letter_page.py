@@ -1,5 +1,3 @@
-# cover_letter_page.py
-
 from huggingface_hub import InferenceClient
 import streamlit as st
 from fpdf import FPDF
@@ -10,13 +8,13 @@ import datetime
 # Load HF token securely from Streamlit secrets
 HF_TOKEN = st.secrets["HF_TOKEN"]
 
-# Initialize client
+# Initialize Hugging Face Inference Client
 client = InferenceClient(
     provider="novita",
     api_key=HF_TOKEN,
 )
 
-# AI cover letter generation function
+# Cover letter generation using LLM
 def generate_cover_letter(name, email, job_title, company_name, job_description, tone="Professional", language="English"):
     prompt = f"""
     You are a professional career assistant helping a candidate write a personalized cover letter.
@@ -47,18 +45,28 @@ def generate_cover_letter(name, email, job_title, company_name, job_description,
     return response.choices[0].message.content.strip()
 
 
-# Helper to generate PDF
+# PDF Generation (Unicode-safe with DejaVu)
 def generate_pdf(content, filename="cover_letter.pdf"):
     pdf = FPDF()
     pdf.add_page()
-    pdf.set_font("Arial", size=12)
+
+    # Add DejaVuSans font for Unicode support
+    font_path = "/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf"
+    if os.path.exists(font_path):
+        pdf.add_font("DejaVu", "", font_path, uni=True)
+        pdf.set_font("DejaVu", size=12)
+    else:
+        pdf.set_font("Arial", size=12)  # fallback (may cause error)
+
     for line in content.split("\n"):
         pdf.multi_cell(0, 10, line)
+
     output_path = os.path.join("/tmp", filename)
     pdf.output(output_path)
     return output_path
 
-# Helper to generate Word document
+
+# Word document generation
 def generate_word(content, filename="cover_letter.docx"):
     doc = Document()
     for line in content.split("\n"):
@@ -67,7 +75,8 @@ def generate_word(content, filename="cover_letter.docx"):
     doc.save(output_path)
     return output_path
 
-# Streamlit UI
+
+# Streamlit App UI
 def show():
     st.subheader("✍️ AI Cover Letter Generator")
 
@@ -94,7 +103,6 @@ def show():
                     st.success("✅ Cover letter generated!")
                     st.text_area("📄 Your Cover Letter", letter, height=500)
 
-                    # Create unique filenames
                     timestamp = datetime.datetime.now().strftime("%Y%m%d%H%M%S")
                     pdf_file = generate_pdf(letter, f"cover_letter_{timestamp}.pdf")
                     word_file = generate_word(letter, f"cover_letter_{timestamp}.docx")
@@ -106,11 +114,10 @@ def show():
                     with open(word_file, "rb") as f:
                         st.download_button("📥 Download as Word", f, file_name=os.path.basename(word_file), mime="application/vnd.openxmlformats-officedocument.wordprocessingml.document")
 
-                    # Apply Now button
+                    # Auto-apply links
                     if apply_option == "LinkedIn":
                         search_url = f"https://www.linkedin.com/jobs/search/?keywords={job_title}+{company}"
                         st.markdown(f"[🔗 Apply Now on LinkedIn]({search_url})", unsafe_allow_html=True)
-
                     elif apply_option == "Remotive (with URL)" and apply_url:
                         st.markdown(f"[🔗 Apply Now on Remotive]({apply_url})", unsafe_allow_html=True)
 
